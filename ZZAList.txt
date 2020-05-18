@@ -1,0 +1,52 @@
+Nicht Einsteigen
+Servus mach's gut
+RB Freiburg(Brsg.) Hbf
+RB Seebrugg
+RB Neustadt(Schwarzwald)
+RB Titisee
+RB Himmelreich
+RB Basel Bad Bhf
+RB Offenburg
+RE Freiburg Hbf
+Höllentalbahn
+RE Offenburg
+RE Karlsruhe
+RE Villingen(Schwarzwald)
+RE Konstanz
+Schwarzwaldbahn
+DB Regio Suedbaden
+RB27 Koblenz Hbf
+RB27 Köln Messe/Deutz
+RE1 Koblenz Hbf
+RE1 Saarbrücken Hbf
+RB81 Koblenz Hbf
+RB81 Wittlich Hbf
+RB81 Trier Hbf
+RB82 Perl
+RB82 Trier Hbf
+RB82 Wittlich Hbf
+RE2 Koblenz Hbf
+RE2 Frankfurt (Main) Hbf
+S2 Roth
+S2 Nürnberg Hbf
+S1 Dresden
+S1 Schöna
+S1 Meißen Triebischtal
+Mannheim Hbf
+Frankfurt Hbf
+Wildau
+St.Rudolf
+Hoch Merzburg
+Köblitz
+Altenburg
+Bad Rinckenburg
+S6 Rannstadt
+S6 Nachteburg Hbf
+Regionalbahn
+Regionalexpress
+Sonderzug
+
+
+www.rail-sim.de
+www.railomanie.eu
+www.BR143.de
