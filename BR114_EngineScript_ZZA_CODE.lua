@@ -220,15 +220,15 @@
 			_Update(time);
 
 		-->>Werte definieren
-			RVNumber = Call("*:GetRVNumber");
+			RVNumber = Call("GetRVNumber");
 			GetIsEditor();
 			TimeofDay = SysCall("ScenarioManager:GetTimeOfDay");
-			IsEnginewithKey = Call("*:GetIsEngineWithKey");
-			simulationTime = Call("*:GetSimulationTime");
+			IsEnginewithKey = Call("GetIsEngineWithKey");
+			simulationTime = Call("GetSimulationTime");
 			isDeadEngine = Call("GetIsDeadEngine");
-			isPlayer = Call("*:GetIsPlayer");
-			speedValue = Call("*:GetSpeed") * 3.6;
-			Ammeter = Call("*:GetControlValue", "Ammeter", 0);
+			isPlayer = Call("GetIsPlayer");
+			speedValue = Call("GetSpeed") * 3.6;
+			Ammeter = Call("GetControlValue", "Ammeter", 0);
 		--<<
 
 		-->>Arraylenghts
@@ -269,7 +269,7 @@
 
 		-->>Lüfter nach Voreinstellung einstellen
 			if (simulationTime > 0.5 and setfans == false and CONFIG.AUTOMATICFANMODEBYDEFAULT == true) then
-				Call("*:SetControlValue", "TractionBlower_Control", 0, -1);
+				Call("SetControlValue", "TractionBlower_Control", 0, -1);
 				setfans = true;
 			end
 		--<<
@@ -368,7 +368,7 @@
 						UIC.result = 0
 					end
 				--<<
-					Call("*:SetRVNumber", UIC.Rawnumber .. UIC.result .. UIC.ZZALetter);
+					Call("SetRVNumber", UIC.Rawnumber .. UIC.result .. UIC.ZZALetter);
 					multiplier = 1;
 					temp1 = "";
 					temp2 = 0;
@@ -416,22 +416,22 @@
 		-->>ZZA Wählen
 			if (simulationTime > 1 and ZZA.Prueflauf.active == false) then
 				-->>Heraufschalten
-					if (Call("*:GetControlValue", "ZZAauf", 0) == 1 and ZZA.Auflock == false) then
+					if (Call("GetControlValue", "ZZAauf", 0) == 1 and ZZA.Auflock == false) then
 						ZZA.Auflock = true;
 						ZZA.Value = ZZA.Value + 1;
 				--<<
 				-->>Sperre, damit man die Taste loslassen muss, um wieder weiterschalten zu können
-					elseif (Call("*:GetControlValue", "ZZAauf", 0) ~= 1 and ZZA.Auflock == true) then
+					elseif (Call("GetControlValue", "ZZAauf", 0) ~= 1 and ZZA.Auflock == true) then
 						ZZA.Auflock = false;
 					end
 				--<<
 				-->>Herbaschalten der ZZA
-					if(Call("*:GetControlValue", "ZZAab", 0) == 1 and ZZA.Ablock == false and ZZA.Value > 1) then
+					if(Call("GetControlValue", "ZZAab", 0) == 1 and ZZA.Ablock == false and ZZA.Value > 1) then
 						ZZA.Ablock = true;
 						ZZA.Value = ZZA.Value - 1;
 				--<<
 				-->>Sperre, damit man die Taste loslassen muss, um wieder weiterschalten zu können
-					elseif (Call("*:GetControlValue", "ZZAab", 0) ~= 1 and ZZA.Ablock == true) then
+					elseif (Call("GetControlValue", "ZZAab", 0) ~= 1 and ZZA.Ablock == true) then
 						ZZA.Ablock = false;
 					end
 				--<<
@@ -519,7 +519,7 @@
 		-->>Türen
 			if (CONFIG.ENABLEVRTAV == true and IsEnginewithKey == 1) then
 
-				if (Call("*:GetControlValue", "DoorsManualClose", 0) == 1 and TAV.closelock == false and tostring(TAV.State) == "2") then
+				if (Call("GetControlValue", "DoorsManualClose", 0) == 1 and TAV.closelock == false and tostring(TAV.State) == "2") then
 
 				-->>An die Wagen den Befehl zum schließen senden
 					Call("SendConsistMessage", messages.vR.TAV_SCHLIESSEN, "tfz-force-close", 1);
@@ -528,7 +528,7 @@
 
 					TAV.closelock = true;
 
-				elseif(Call("*:GetControlValue", "DoorsManualClose", 0) ~= 1 and TAV.closelock == true) then
+				elseif(Call("GetControlValue", "DoorsManualClose", 0) ~= 1 and TAV.closelock == true) then
 					TAV.closelock = false;
 				end
 
@@ -588,7 +588,7 @@
 			--<<
 
 			-->>Aktiviert den 'T' Leuchtmelder
-				Call("*:SetControlValue", "DoorsCount", 0, 1 - TAV.Blink.ONOFF);
+				Call("SetControlValue", "DoorsCount", 0, 1 - TAV.Blink.ONOFF);
 			--<<
 
 
@@ -596,9 +596,9 @@
 				if (firstrun == true) then
 					TAV.lastlockmsg = -1 * TAV.lockmsgcooldown;
 				end
-				if (Call("*:GetControlValue", "VirtualThrottle", 0) ~= 0 and tostring(TAV.State) ~= "0") then
-					--ShowMessage(Call("*:GetControlValue", "VirtualThrottle", 0), 1);
-					--Call("*:SetControlValue", "Regulator", 0, 0);
+				if (Call("GetControlValue", "VirtualThrottle", 0) ~= 0 and tostring(TAV.State) ~= "0") then
+					--ShowMessage(Call("GetControlValue", "VirtualThrottle", 0), 1);
+					--Call("SetControlValue", "Regulator", 0, 0);
 					TAV.NSZwang = true;
 					if (TAV.locklock == false and TAV.lastlockmsg + TAV.lockmsgcooldown < simulationTime) then
 						ShowMessage("Traktionssperre aktiv! Türen zuerst schließen!", 4);
@@ -607,13 +607,13 @@
 					end
 				end
 
-				if (Call("*:GetControlValue", "VirtualThrottle", 0) == 0) then
+				if (Call("GetControlValue", "VirtualThrottle", 0) == 0) then
 					TAV.locklock = false;
 					TAV.NSZwang = false;
 				end
 
-				if (Call("*:GetControlValue", "VirtualThrottle", 0) > 0 and TAV.NSZwang == true) then
-					Call("*:SetControlValue", "VirtualThrottle", 0, 0);
+				if (Call("GetControlValue", "VirtualThrottle", 0) > 0 and TAV.NSZwang == true) then
+					Call("SetControlValue", "VirtualThrottle", 0, 0);
 				end
 			--<<
 			end
@@ -626,8 +626,8 @@
 
 				if (CurrentDir == 1) then
 				-->>Stellt die Rollos in Fahrtrichtung ein
-					Rollos.RAnimTime = 1 - Call("*:GetControlValue", "CabBlind_R", 0);
-					Rollos.LAnimTime = 1 - Call("*:GetControlValue", "CabBlind_L", 0);
+					Rollos.RAnimTime = 1 - Call("GetControlValue", "CabBlind_R", 0);
+					Rollos.LAnimTime = 1 - Call("GetControlValue", "CabBlind_L", 0);
 					DisplayBlinds(Rollos.RAnimTime, "F_R");
 					DisplayBlinds(Rollos.LAnimTime, "F_L");
 				--<<
@@ -636,8 +636,8 @@
 					if (CONFIG.INACTIVECABBLINDSDOWN == true) then
 						DisplayBlinds(0, "R_R");
 						DisplayBlinds(0, "R_L");
-						Call("*:SetTime", "ExtBlind_BL", 1);
-						Call("*:SetTime", "ExtBlind_BR", 1);
+						Call("SetTime", "ExtBlind_BL", 1);
+						Call("SetTime", "ExtBlind_BR", 1);
 					else
 						--DisplayBlinds(1, "F_R");
 						--DisplayBlinds(1, "F_L");
@@ -646,15 +646,15 @@
 					end
 				--<<
 				elseif (CurrentDir == 2) then
-					Rollos.RAnimTime = 1 - Call("*:GetControlValue", "CabBlind_R", 0);
-					Rollos.LAnimTime = 1 - Call("*:GetControlValue", "CabBlind_L", 0);
+					Rollos.RAnimTime = 1 - Call("GetControlValue", "CabBlind_R", 0);
+					Rollos.LAnimTime = 1 - Call("GetControlValue", "CabBlind_L", 0);
 					DisplayBlinds(Rollos.RAnimTime, "R_R");
 					DisplayBlinds(Rollos.LAnimTime, "R_L");
 					if (CONFIG.INACTIVECABBLINDSDOWN == true) then
 						DisplayBlinds(0, "F_R");
 						DisplayBlinds(0, "F_L");
-						Call("*:SetTime", "ExtBlind_FL", 1);
-						Call("*:SetTime", "ExtBlind_FR", 1);
+						Call("SetTime", "ExtBlind_FL", 1);
+						Call("SetTime", "ExtBlind_FR", 1);
 					else
 						--DisplayBlinds(1, "R_R");
 						--DisplayBlinds(1, "R_L");
@@ -668,13 +668,13 @@
 					if (CONFIG.INACTIVECABBLINDSDOWN == true) then
 						DisplayBlinds(0, "F_R");
 						DisplayBlinds(0, "F_L");
-						Call("*:SetTime", "ExtBlind_FL", 1);
-						Call("*:SetTime", "ExtBlind_FR", 1);
+						Call("SetTime", "ExtBlind_FL", 1);
+						Call("SetTime", "ExtBlind_FR", 1);
 						--
 						DisplayBlinds(0, "R_R");
 						DisplayBlinds(0, "R_L");
-						Call("*:SetTime", "ExtBlind_BL", 1);
-						Call("*:SetTime", "ExtBlind_BR", 1);
+						Call("SetTime", "ExtBlind_BL", 1);
+						Call("SetTime", "ExtBlind_BR", 1);
 					else
 						DisplayBlinds(1, "F_R");
 						DisplayBlinds(1, "F_L");
@@ -690,23 +690,23 @@
 							if (IsEngineinFront == false and DrivingFwd == true) then
 								DisplayBlinds(1, "F_R");
 								DisplayBlinds(1, "F_L");
-								Call("*:SetTime", "ExtBlind_FL", 0);
-								Call("*:SetTime", "ExtBlind_FR", 0);
+								Call("SetTime", "ExtBlind_FL", 0);
+								Call("SetTime", "ExtBlind_FR", 0);
 								DisplayBlinds(0, "R_R");
 								DisplayBlinds(0, "R_L");
 							elseif (IsEngineinRear == false and DrivingRwd == true) then
 								DisplayBlinds(0, "F_R");
 								DisplayBlinds(0, "F_L");
-								Call("*:SetTime", "ExtBlind_BL", 0);
-								Call("*:SetTime", "ExtBlind_BR", 0);
+								Call("SetTime", "ExtBlind_BL", 0);
+								Call("SetTime", "ExtBlind_BR", 0);
 								DisplayBlinds(1, "R_R");
 								DisplayBlinds(1, "R_L");
 							else
 								if (IsEngineinFront == false) then
 									DisplayBlinds(1, "F_R");
 									DisplayBlinds(1, "F_L");
-									Call("*:SetTime", "ExtBlind_FL", 0);
-									Call("*:SetTime", "ExtBlind_FR", 0);
+									Call("SetTime", "ExtBlind_FL", 0);
+									Call("SetTime", "ExtBlind_FR", 0);
 									DisplayBlinds(0, "R_R");
 									DisplayBlinds(0, "R_L");
 								end
@@ -715,15 +715,15 @@
 								if (isSpeedAtZero == true and IsEngineinFront == false) then
 									DisplayBlinds(1, "F_R");
 									DisplayBlinds(1, "F_L");
-									Call("*:SetTime", "ExtBlind_FL", 0);
-									Call("*:SetTime", "ExtBlind_FR", 0);
+									Call("SetTime", "ExtBlind_FL", 0);
+									Call("SetTime", "ExtBlind_FR", 0);
 									DisplayBlinds(0, "R_R");
 									DisplayBlinds(0, "R_L");
 								elseif (isSpeedAtZero == true and IsEngineinRear == false) then
 									DisplayBlinds(1, "R_R");
 									DisplayBlinds(1, "R_L");
-									Call("*:SetTime", "ExtBlind_BL", 0);
-									Call("*:SetTime", "ExtBlind_BR", 0);
+									Call("SetTime", "ExtBlind_BL", 0);
+									Call("SetTime", "ExtBlind_BR", 0);
 									DisplayBlinds(0, "F_R");
 									DisplayBlinds(0, "F_L");
 								end
@@ -742,13 +742,13 @@
 						if (CONFIG.INACTIVECABBLINDSDOWN == true) then
 							DisplayBlinds(0, "F_R");
 							DisplayBlinds(0, "F_L");
-							Call("*:SetTime", "ExtBlind_FL", 1);
-							Call("*:SetTime", "ExtBlind_FR", 1);
+							Call("SetTime", "ExtBlind_FL", 1);
+							Call("SetTime", "ExtBlind_FR", 1);
 							--
 							DisplayBlinds(0, "R_R");
 							DisplayBlinds(0, "R_L");
-							Call("*:SetTime", "ExtBlind_BL", 1);
-							Call("*:SetTime", "ExtBlind_BR", 1);
+							Call("SetTime", "ExtBlind_BL", 1);
+							Call("SetTime", "ExtBlind_BR", 1);
 						else
 							DisplayBlinds(1, "F_R");
 							DisplayBlinds(1, "F_L");
@@ -767,13 +767,13 @@
 					Panto.CurrentValue = 1;
 				end
 
-				Call("*:SetTime", "ExtPantograph_" .. tostring(Panto.CurrentValue), 1);
-				Call("*:SetTime", "ExtPantograph_" .. tostring(3 - Panto.CurrentValue), 0);
+				Call("SetTime", "ExtPantograph_" .. tostring(Panto.CurrentValue), 1);
+				Call("SetTime", "ExtPantograph_" .. tostring(3 - Panto.CurrentValue), 0);
 			end
 			
 			if (isDeadEngine == 1) then
-				Call("*:SetTime", "ExtPantograph_2", 0);
-				Call("*:SetTime", "ExtPantograph_1", 0);
+				Call("SetTime", "ExtPantograph_2", 0);
+				Call("SetTime", "ExtPantograph_1", 0);
 			end
 		--<<
 
@@ -815,7 +815,7 @@
 					end
 				end
 			end]]
-			--Call("*:SetControlValue", "Driver", 0, 1)
+			--Call("SetControlValue", "Driver", 0, 1)
 
 		--<<
 
@@ -854,7 +854,7 @@
 								FML.Value = FML.Value - FML.factor;
 							end
 						end
-						Call("*:SetControlValue", "TractionBlower_State", 0, FML.Value);
+						Call("SetControlValue", "TractionBlower_State", 0, FML.Value);
 					end
 					--<<
 				end
@@ -887,10 +887,10 @@
 					end
 					-->>Senden der FML Daten
 					if (math.floor(FML.lastrefreshtime * 2) ~= math.floor(simulationTime * 2) and FML.Connectionetablished == true) then
-						Call("SendConsistMessage", messages.FML, tostring("State" .. Call("*:GetControlValue", "TractionBlower_State", 0)), 0);
-						Call("SendConsistMessage", messages.FML, tostring("State" .. Call("*:GetControlValue", "TractionBlower_State", 0)), 1);
-						Call("SendConsistMessage", messages.FML, tostring("Control" .. Call("*:GetControlValue", "TractionBlower_Control", 0)), 0);
-						Call("SendConsistMessage", messages.FML, tostring("Control" .. Call("*:GetControlValue", "TractionBlower_Control", 0)), 1);
+						Call("SendConsistMessage", messages.FML, tostring("State" .. Call("GetControlValue", "TractionBlower_State", 0)), 0);
+						Call("SendConsistMessage", messages.FML, tostring("State" .. Call("GetControlValue", "TractionBlower_State", 0)), 1);
+						Call("SendConsistMessage", messages.FML, tostring("Control" .. Call("GetControlValue", "TractionBlower_Control", 0)), 0);
+						Call("SendConsistMessage", messages.FML, tostring("Control" .. Call("GetControlValue", "TractionBlower_Control", 0)), 1);
 						FML.lastrefreshtime = simulationTime;
 					end
 					--<<
@@ -905,7 +905,7 @@
 						FML.Value = FML.Value - FML.factor;
 					end
 				end
-				Call("*:SetControlValue", "TractionBlower_State", 0, FML.Value);
+				Call("SetControlValue", "TractionBlower_State", 0, FML.Value);
 			end
 		--<<
 			ZZA.lastValue = ZZA.Value;
@@ -941,7 +941,7 @@
 		--	- Funktionsweise: Im Editor verläuft keine Zeit, deswegen lässt sich leicht ermitteln ob dieser gerade aktiv ist
 
 		function GetIsEditor()
-			if (Call("*:GetSimulationTime") == 0) then
+			if (Call("GetSimulationTime") == 0) then
 				IsEditor = true;
 			else
 				IsEditor = false;
@@ -1079,7 +1079,7 @@
 
 						-->>Umsetzen der empfangenen FML Daten
 						elseif (string.find(argument, "State") ~= 0) then
-							Call("*:SetControlValue", "TractionBlower_State", 0, tonumber(string.sub(argument, 6)));
+							Call("SetControlValue", "TractionBlower_State", 0, tonumber(string.sub(argument, 6)));
 						end
 						if (string.find(argument, "Control") ~= 0) then
 							FML.State = tonumber(string.sub(argument, 8));
@@ -1132,8 +1132,8 @@
 			_OnCameraEnter(cabEndWithCamera, carriageCam);
 			CurrentDir = cabEndWithCamera;
 			if (CONFIG.RESETBLINDSONCABENTER == true) then
-				Call("*:SetControlValue", "CabBlind_L", 0, 0);
-				Call("*:SetControlValue", "CabBlind_R", 0, 0);
+				Call("SetControlValue", "CabBlind_L", 0, 0);
+				Call("SetControlValue", "CabBlind_R", 0, 0);
 			end
 
 			--local Zahl1 = 34;
