@@ -22,6 +22,12 @@ CONFIG.ENABLEVRTAV = true;
 -- De- oder aktiviert das Korrigieren der UIC Prüfziffer [true/false]
 CONFIG.CORRECTRVNUMBER = true;
 
+-- Stellt ein, ob beim Start die Lüfter bereits auf Automatik gestellt sein sollen [true/false]
+CONFIG.AUTOMATICFANMODEBYDEFAULT = true;
+
+-- Stellt ein, ab welcher Geschwindiigkeit KI - Züge die Lüfter anmachen sollen [Numerischer Wert]
+CONFIG.AIFANTHRESHOLD = 7;
+
 -- De- oder aktiviert das Kommunizieren mit der ZZA von vR Wagen [true/false]
 CONFIG.VRZZACOMMUNICATION = true;
 

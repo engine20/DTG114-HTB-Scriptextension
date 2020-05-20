@@ -35,6 +35,7 @@
 		simulationTime = 0;
 		TimeofDay = 0;
 		Blindlastchktime = 0;
+		setfans = false;
 	--<<
 
 	-->>Übertragung an andere Fahrzeuge
@@ -263,6 +264,13 @@
 				IsEngineinRear = true;
 			elseif (Call("SendConsistMessage", messages.test, "0", 1) == 0) then
 				IsEngineinRear = false;
+			end
+		--<<
+
+		-->>Lüfter nach Voreinstellung einstellen
+			if (simulationTime > 0.5 and setfans == false and CONFIG.AUTOMATICFANMODEBYDEFAULT == true) then
+				Call("*:SetControlValue", "TractionBlower_Control", 0, -1);
+				setfans = true;
 			end
 		--<<
 
@@ -836,7 +844,7 @@
 					--<<
 					-->>Wenn keine Verbindung besteht wird ab 10 Kmh der Lüfter angemacht
 					else
-						if (speedValue > 10 or speedValue < -10 and Ammeter > 20) then
+						if (speedValue > CONFIG.AIFANTHRESHOLD or speedValue < -1 * CONFIG.AIFANTHRESHOLD and Ammeter > 20) then
 						--if (Ammeter > 130) then
 							if (FML.Value < 1) then
 								FML.Value = FML.Value + FML.factor;
@@ -888,7 +896,7 @@
 					--<<
 				end
 			else
-				if (speedValue > 10 or speedValue < -10) then
+				if (speedValue > CONFIG.AIFANTHRESHOLD or speedValue < -1 * CONFIG.AIFANTHRESHOLD) then
 					if (FML.Value < 1) then
 						FML.Value = FML.Value + FML.factor;
 					end
