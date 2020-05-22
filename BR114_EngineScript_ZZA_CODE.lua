@@ -601,7 +601,7 @@
 					--Call("SetControlValue", "Regulator", 0, 0);
 					TAV.NSZwang = true;
 					if (TAV.locklock == false and TAV.lastlockmsg + TAV.lockmsgcooldown < simulationTime) then
-						ShowMessage("Traktionssperre aktiv! Türen zuerst schließen!", 4);
+						ShowMessage("Traktionssperre aktiv! Türen sind noch offen!", 4);
 						TAV.locklock = true;
 						TAV.lastlockmsg = simulationTime;
 					end
