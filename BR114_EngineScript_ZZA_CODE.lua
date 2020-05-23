@@ -275,7 +275,7 @@
 		--<<
 
 		-->>ZZA vorbereiten
-			if (firstrun == true and IsEnginewithKey == 1) then
+			if (firstrun == true) then
 				ResetZZA();
 			-->>Schreibt die ZZA Positionen aus der Textdatei in ein Array
 				if (CONFIG.USEDESTINATIONLIST == true) then
