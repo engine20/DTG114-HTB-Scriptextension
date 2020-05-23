@@ -1044,6 +1044,7 @@
 				--<<
 			 elseif (message == messages.vR.ZZAValue) then
 				if (CONFIG.VRZZACOMMUNICATION == true) then
+					if (tonumber(argument) < arr.CONFIG_ZZANAMES) then
 	
 					-->>Aktiviert die entsprechende ZZA
 						
@@ -1058,7 +1059,8 @@
 						end
 					--<<
 					end
-				end			
+				end	
+			end		
 
 		-->>FML
 			if (isDeadEngine == 0) then
