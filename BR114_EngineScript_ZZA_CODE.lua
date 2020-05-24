@@ -712,21 +712,6 @@
 								end
 							end
 							--if (firstrun == true) then
-								if (isSpeedAtZero == true and IsEngineinFront == false) then
-									DisplayBlinds(1, "F_R");
-									DisplayBlinds(1, "F_L");
-									Call("SetTime", "ExtBlind_FL", 0);
-									Call("SetTime", "ExtBlind_FR", 0);
-									DisplayBlinds(0, "R_R");
-									DisplayBlinds(0, "R_L");
-								elseif (isSpeedAtZero == true and IsEngineinRear == false) then
-									DisplayBlinds(1, "R_R");
-									DisplayBlinds(1, "R_L");
-									Call("SetTime", "ExtBlind_BL", 0);
-									Call("SetTime", "ExtBlind_BR", 0);
-									DisplayBlinds(0, "F_R");
-									DisplayBlinds(0, "F_L");
-								end
 							--end
 						else
 							DisplayBlinds(1, "F_R");
