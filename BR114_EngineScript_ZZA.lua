@@ -4,14 +4,14 @@ CONFIG = {};
 -- Stellt ein, ob im nicht besetzten Führerstand alle Rollos heruntergefahren werden sollen [true/false]
 CONFIG.INACTIVECABBLINDSDOWN = true;
 
--- Stellt ein, ob beim Betreten eines Führerstands alle Rollos hochgefahren werden sollen [true/false]
-CONFIG.RESETBLINDSONCABENTER = false;
-
 -- Stellt ein, ob beim Verstellen der ZZA die aktuelle Einstellung als Nachricht angezeigt wird [true/false]
 CONFIG.DISPLAYZZAPOS = true;
 
 -- De- oder aktiviert global alle Nachrichten [true/false]
 CONFIG.DISPLAYMESSAGES = true;
+
+-- Stellt ein, ob beim Betreten eines Führerstands alle Rollos hochgefahren werden sollen [true/false]
+CONFIG.RESETBLINDSONCABENTER = false;
 
 -- De- oder aktiviert den Flugschnee (dieser wird nur im Winter ausgelöst) [true/false]
 CONFIG.ENABLESNOW = true;
@@ -30,6 +30,12 @@ CONFIG.AIFANTHRESHOLD = 7;
 
 -- De- oder aktiviert das Kommunizieren mit der ZZA von vR Wagen [true/false]
 CONFIG.VRZZACOMMUNICATION = true;
+
+-- De- oder aktiviert die Erwiterten Debug Ausgaben der PZB [true/false]
+CONFIG.PZBDEBUGMODEON = false;
+
+-- De- oder aktiviert erklärungen von Zwangsbremsungen [true/false]
+CONFIG.PZBZWBFEEDBACK = false;
 
 -- De- oder aktiviert die Benutzung der Liste der Ziele als *.txt Datei [true/false]
 CONFIG.USEDESTINATIONLIST = true;
@@ -53,4 +59,8 @@ require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR11
 
 --### Pfad zur Skripterweiterung eintragen ##################################################################
 require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_ZZA_CODE.lua'
+--###########################################################################################################
+
+--### Pfad zur Skripterweiterung (PZB_P) eintragen ##########################################################
+require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_P_PZB.lua'
 --###########################################################################################################
