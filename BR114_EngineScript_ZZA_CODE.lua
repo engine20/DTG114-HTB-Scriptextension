@@ -893,6 +893,15 @@
 				Call("SetControlValue", "TractionBlower_State", 0, FML.Value);
 			end
 		--<<
+
+		-->>Sounds bei geöffnetem Fenster
+			if (CurrentDir == 1) then
+				Call("SetControlValue", "WindowSoundMixture", 0, math.max(Call("GetControlValue", "ExtWindow_FR", 0), Call("GetControlValue", "ExtWindow_FL", 0)))
+			elseif (CurrentDir == 2) then
+				Call("SetControlValue", "WindowSoundMixture", 0, math.max(Call("GetControlValue", "ExtWindow_BR", 0), Call("GetControlValue", "ExtWindow_BL", 0)))
+			end
+		--<<
+			
 			ZZA.lastValue = ZZA.Value;
 			firstrun = false;
 	
