@@ -184,6 +184,15 @@
 		FML.Value = 0;
 		FML.factor = 0.01;
 	--<<
+
+	-->>Kompressor
+		MainReservoir = 0
+		lastValue_MainReservoir = 0
+		timesincreasing = 0
+		timesstopincreasing = 0
+		Compressorthreshold = 10
+
+	--<<
 --<<
 
 -->>Verweis auf das Originalskript
@@ -900,6 +909,28 @@
 			elseif (CurrentDir == 2) then
 				Call("SetControlValue", "WindowSoundMixture", 0, math.max(Call("GetControlValue", "ExtWindow_BR", 0), Call("GetControlValue", "ExtWindow_BL", 0)))
 			end
+		--<<
+
+		-->>Kompressor Fix
+			MainReservoir = Call("GetControlValue", "MainReservoirPressureBAR", 0);
+
+			if MainReservoir > lastValue_MainReservoir then
+				timesincreasing = timesincreasing + 1
+				timesstopincreasing = 0;
+			else
+				timesstopincreasing = timesstopincreasing + 1
+				if (timesincreasing < Compressorthreshold) then
+					timesincreasing = 0;
+				end
+			end
+
+			if (timesincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 0) then
+				Call("SetControlValue", "Compressor2", 0, 1);
+			elseif (timesstopincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 1) or MainReservoir > 9.99 then
+				Call("SetControlValue", "Compressor2", 0, 0);
+				timesincreasing = 0;
+			end
+			lastValue_MainReservoir = MainReservoir;
 		--<<
 			
 			ZZA.lastValue = ZZA.Value;
