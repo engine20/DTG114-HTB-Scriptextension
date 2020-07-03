@@ -64,3 +64,7 @@ require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR11
 --### Pfad zur Skripterweiterung (PZB_P) eintragen ##########################################################
 require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_P_PZB.lua'
 --###########################################################################################################
+
+--### Pfad zur Skripterweiterung (SIFA) eintragen ##########################################################
+require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_SIFA.lua'
+--###########################################################################################################
