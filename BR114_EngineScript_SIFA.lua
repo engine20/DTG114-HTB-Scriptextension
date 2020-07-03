@@ -43,7 +43,16 @@ externalSIFA_Brakes = {
         --Call("SetControlValue", "VirtualBrake", 0, 1)
         Call("SetControlValue", "TrainBrakeControl", 0, 1.0)
         Call("SetControlValue", "VirtualThrottle", 0, 0)
-        Call("SetControlValue", "VirtualDynamicBrake", 0, 1)
+        Call("SetControlValue", "Regulator", 0, 0)
+        Call("SetControlValue", "DynamicBrake", 0, 1)
+        -- Lock Regulator
+    	Call("SetControlValue", "TapChanger_Target", 0, 0)
+		Call("SetControlValue", "TapChanger_Control", 0, 0)
+		Call("SetControlValue", "TapChanger_Fault", 0, 0)
+		Call("SetControlValue", "TapChanger_T", 0, -1)
+		Call("SetControlValue", "TapChanger_U", 0, -1)
+		-- Set Traction Needle
+		Call("SetControlTargetValue", "TractionNeedle", 0, -1)
     end
 }
 
