@@ -926,13 +926,13 @@
 
 			if (timesincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 0) then
 				Call("SetControlValue", "Compressor2", 0, 1);
-			elseif (timesstopincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 1) or MainReservoir > 9.99 then
+			elseif (timesstopincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 1) and MainReservoir > 9.99 then
 				Call("SetControlValue", "Compressor2", 0, 0);
 				timesincreasing = 0;
 			end
 			lastValue_MainReservoir = MainReservoir;
 		--<<
-			
+
 			ZZA.lastValue = ZZA.Value;
 			firstrun = false;
 	
