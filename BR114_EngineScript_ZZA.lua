@@ -7,9 +7,6 @@ CONFIG.INACTIVECABBLINDSDOWN = true;
 -- Stellt ein, ob beim Verstellen der ZZA die aktuelle Einstellung als Nachricht angezeigt wird [true/false]
 CONFIG.DISPLAYZZAPOS = true;
 
--- De- oder aktiviert global alle Nachrichten [true/false]
-CONFIG.DISPLAYMESSAGES = true;
-
 -- Stellt ein, ob beim Betreten eines Führerstands alle Rollos hochgefahren werden sollen [true/false]
 CONFIG.RESETBLINDSONCABENTER = false;
 
@@ -40,6 +37,12 @@ CONFIG.PZBZWBFEEDBACK = false;
 -- De- oder aktiviert die Benutzung der Liste der Ziele als *.txt Datei [true/false]
 CONFIG.USEDESTINATIONLIST = true;
 
+-- De- oder aktiviert die Erweiterten Debug Ausgaben [true/false]
+CONFIG.ENABLEDEBUGMESSAGES = false;
+
+-- De- oder aktiviert global alle Nachrichten (Debug Meldungen sind davon nicht betroffen) [true/false]
+CONFIG.DISPLAYMESSAGES = true;
+
 -- Pfad zur Liste der Ziele (nur zu beachten, wenn die vorherige Option als True eingetragen wurde) [Pfadangabe]
 CONFIG.DESTINATIONLISTPATH = "Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/ZZAList.txt";
 
@@ -65,6 +68,6 @@ require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR11
 require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_P_PZB.lua'
 --###########################################################################################################
 
---### Pfad zur Skripterweiterung (SIFA) eintragen ##########################################################
+--### Pfad zur Skripterweiterung (SIFA) eintragen ###########################################################
 require 'Assets/DTG/BR114Pack01/RailVehicles/Electric/[114] 143_HTB/Scripts/BR114_EngineScript_SIFA.lua'
 --###########################################################################################################

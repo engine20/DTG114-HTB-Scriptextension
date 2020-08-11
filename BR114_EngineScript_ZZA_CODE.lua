@@ -49,7 +49,7 @@
 		messages.test = 7004;
 		messages.FML = 7007;
 		--
-		messages.vR = {}
+		messages.vR = {};
 		--
 		messages.vR.ZZAValue = 895301;
 		--
@@ -188,9 +188,8 @@
 	-->>Kompressor
 		MainReservoir = 0
 		lastValue_MainReservoir = 0
-		timesincreasing = 0
-		timesstopincreasing = 0
-		Compressorthreshold = 10
+		chknextframe = 0;
+		compactive = false;
 
 	--<<
 --<<
@@ -278,6 +277,7 @@
 
 		-->>Lüfter nach Voreinstellung einstellen
 			if (simulationTime > 0.5 and setfans == false and CONFIG.AUTOMATICFANMODEBYDEFAULT == true) then
+				if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("FANS SET TO AUTOMATIC", 4) end
 				Call("SetControlValue", "TractionBlower_Control", 0, -1);
 				setfans = true;
 			end
@@ -286,6 +286,7 @@
 		-->>ZZA vorbereiten
 			if (firstrun == true) then
 				ResetZZA();
+				if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("ZZA Reset", 4) end
 			-->>Schreibt die ZZA Positionen aus der Textdatei in ein Array
 				if (CONFIG.USEDESTINATIONLIST == true) then
 					ZZA.destinationfile = io.open("../Railworks/" .. CONFIG.DESTINATIONLISTPATH,"r");
@@ -300,6 +301,7 @@
 						end
 					end
 					arr.ZZADESTLIST = GetArrayLenght(ZZA.destinationlist);
+					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Destinations read from Text File", 4) end
 				--<<
 				end
 			--<<
@@ -308,6 +310,7 @@
 
 		-->>Sucht im Zugverband nach kompatiblen Consists
 			if (IsEnginewithKey == 1 and simulationTime > 0.5 and ZZA.Prueflauf.messagessent == false) then
+			if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Starting Testrun for Compatible Vehicles", 4) end
 				if (IsEngineinFront == true) then
 					Call("SendConsistMessage", messages.testrun2, "0", 0);
 				end
@@ -378,6 +381,7 @@
 					end
 				--<<
 					Call("SetRVNumber", UIC.Rawnumber .. UIC.result .. UIC.ZZALetter);
+				if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Set RailVehicle Consist Number", 4) end
 					multiplier = 1;
 					temp1 = "";
 					temp2 = 0;
@@ -464,6 +468,7 @@
 
 			-->>ZZA an andere Fahrzeuge senden
 				if (ZZA.Value <= arr.CONFIG_ZZANAMES and firstrun == false) then
+					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("ZZA State sent to other Vehicles", 4) end
 					if (CONFIG.VRZZACOMMUNICATION == true) then
 						Call("SendConsistMessage", messages.vR.ZZAValue, tostring(ZZA.Value), 0);
 						Call("SendConsistMessage", messages.vR.ZZAValue, tostring(ZZA.Value), 1);
@@ -491,7 +496,7 @@
 			--	- Das Ergebnis müssen wir abrunden auf 0 Nachkommastellen, dann haben wir die aktuelle Stunde. Dann schauen wir, was uns noch fehlt, um von Stunden
 			--	- auf die Zeit zu kommen. Mit dieser Differenz wird das ganze wiederholt, bloß entspricht 1 Minute 60 Sekunden.
 	
-			if (IsEnginewithKey == 1 and Clock.lastValue_clockrefreshtime ~= abrunden(TimeofDay)) then
+			if (IsEnginewithKey == 1 and Clock.lastValue_clockrefreshtime ~= math.floor(TimeofDay)) then
 
 			-->>Kommuniziert mit den Wagen, dass diese die Türsteuerung aktivieren
 				if (CONFIG.ENABLEVRTAV == true) then
@@ -499,18 +504,18 @@
 					Call("SendConsistMessage", messages.vR.CONSIST_CHECK, "1", 1);
 				end
 			--<<
-				Clock.hours = abrunden(TimeofDay / 3600);
+				Clock.hours = math.floor(TimeofDay / 3600);
 				Clock.deltahm = TimeofDay - Clock.hours * 3600;
 				--
-				Clock.minutes = abrunden(Clock.deltahm / 60);
+				Clock.minutes = math.floor(Clock.deltahm / 60);
 				Clock.deltams = TimeofDay - Clock.hours * 3600 - Clock.minutes * 60;
 				--
-				Clock.seconds = abrunden(Clock.deltams / 1);
+				Clock.seconds = math.floor(Clock.deltams / 1);
 				--
 				Clock.hmsstring = forcetwodigits(Clock.hours) .. forcetwodigits(Clock.minutes) .. forcetwodigits(Clock.seconds);
 				DisplayTime(Clock.hmsstring);
 				--
-				Clock.lastValue_clockrefreshtime = abrunden(TimeofDay);
+				Clock.lastValue_clockrefreshtime = math.floor(TimeofDay);
 			end
 		--<<
 
@@ -533,6 +538,7 @@
 				-->>An die Wagen den Befehl zum schließen senden
 					Call("SendConsistMessage", messages.vR.TAV_SCHLIESSEN, "tfz-force-close", 1);
 					Call("SendConsistMessage", messages.vR.TAV_SCHLIESSEN, "tfz-force-close", 0);
+					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Sending Close Message to vR Coaches", 4) end
 				--<<
 
 					TAV.closelock = true;
@@ -819,6 +825,7 @@
 				if (isDeadEngine == 0 and IsEnginewithKey == 0) then
 					-->>Lüftereinstellung wurde geändert
 					if (FML.State ~= FML.lastValue_State) then
+						if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("FML changed State", 4) end
 						-->>Anzeigen des aktuellen Lüfterstatus
 						if (FML.State == -1) then
 							ShowMessage(CreateConsistNumber(FML.ZDSMasterRVNumber, "143") .. " > " .. CreateConsistNumber(RVNumber, "143") .. " ZDS:\nFahrmotorlüfter - Automatik", 4);
@@ -863,10 +870,10 @@
 					if (math.floor(FML.lastConsistChecktimetime / 5) ~= math.floor(simulationTime / 5)) then
 						-->>Wenn Nachricht zurückkommt ist die Verbindung hergestellt, wenn nicht bleibt die Variable auf false
 						FML.Connectionetablished = false;
+						if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Master Sent FML alive request", 4) end
 						Call("SendConsistMessage", messages.FML, tostring("Alive" .. RVNumber), 0);
 						Call("SendConsistMessage", messages.FML, tostring("Alive" .. RVNumber), 1);
 						--<<
-	
 						-->>Wenn der Verbindungsstatus geändert wurde, wird die entsprechende Meldung gezeigt
 						if (FML.Connectionetablished ~= FML.lastConnectionetablished) then
 							if (FML.Connectionetablished == false) then
@@ -914,27 +921,37 @@
 		-->>Kompressor Fix
 			MainReservoir = Call("GetControlValue", "MainReservoirPressureBAR", 0);
 
-			if MainReservoir > lastValue_MainReservoir then
-				timesincreasing = timesincreasing + 1
-				timesstopincreasing = 0;
-			else
-				timesstopincreasing = timesstopincreasing + 1
-				if (timesincreasing < Compressorthreshold) then
-					timesincreasing = 0;
+			if chknextframe ~= 0 then
+				if chknextframe ~= MainReservoir then
+					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Compressor On", 4) end
+					Call("SetControlValue", "Compressor2", 0, 1);
+					compactive = true;
+				end
+				chknextframe = 0;
+			end
+
+			if Call("GetSimulationTime") > 1 then
+				if MainReservoir <= 8.482 and chknextframe == 0 and not compactive then
+					chknextframe = MainReservoir;
+				end
+
+				lastValue_MainReservoir = MainReservoir;
+
+				if MainReservoir >= 9.99 and compactive then
+					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Compressor Off", 4) end
+					Call("SetControlValue", "Compressor2", 0, 0);
+					compactive = false;
+					chknextframe = 0;
 				end
 			end
 
-			if (timesincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 0) then
-				Call("SetControlValue", "Compressor2", 0, 1);
-			elseif (timesstopincreasing > Compressorthreshold and Call("GetControlValue", "Compressor2", 0) == 1) and MainReservoir > 9.99 then
-				Call("SetControlValue", "Compressor2", 0, 0);
-				timesincreasing = 0;
-			end
-			lastValue_MainReservoir = MainReservoir;
+			
 		--<<
 
 			ZZA.lastValue = ZZA.Value;
 			firstrun = false;
+
+
 	
 			end
 	--<<
@@ -1054,6 +1071,7 @@
 		--<<
 
 			if (message == messages.ZZAValue) then
+			if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("ZZA State Received", 4) end
 
 				-->>Aktiviert die entsprechende ZZA
 					
@@ -1095,6 +1113,7 @@
 						-->>Wenn Nachricht 'Alive' von der führenden Lok erhalten
 						if (string.find(argument, "Alive") ~= nil) then
 							FML.ZDSMasterRVNumber = string.sub(argument, 6);
+						if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Slave got FML alive Request", 4) end
 							if (FML.isControlledbyEngine == false) then
 								ShowMessage(CreateConsistNumber(RVNumber, "143") .. ": ZDS Verbindet... \nAnforderung erhalten von " .. CreateConsistNumber(FML.ZDSMasterRVNumber, "143") .. "!\nSende Antwort!", 4);
 							end
@@ -1133,6 +1152,7 @@
 
 			if (IsEnginewithKey == 0) then
 				if (message == messages.testrun or message == messages.testrun2) then
+						if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Received Testrun", 4) end
 						Call("SendConsistMessage", gobackchk(message), tostring(tonumber(argument) + 1), 1 - dirproject(direction));
 						Call("SendConsistMessage", message, tostring(tonumber(argument) + 1), dirproject(direction));
 				elseif (message == messages.testrunrev or message == messages.testrun2rev) then
@@ -1162,6 +1182,7 @@
 				Call("SetControlValue", "CabBlind_L", 0, 0);
 				Call("SetControlValue", "CabBlind_R", 0, 0);
 			end
+			if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Camera " .. cabEndWithCamera .. " active", 4) end
 
 			--local Zahl1 = 34;
 			--local Zahl2 = 10;
@@ -1259,11 +1280,6 @@
 			end
 		end
 
-	-->>Funktion zum Abrunden auf 0 Kommastellen
-		function abrunden(Zahl)
-			return math.floor(Zahl);
-		end
-	--<<
 
 	-->>Wandelt eine einstellige Zahl in einen String mit 0 davor um
 		function forcetwodigits(Number)
@@ -1392,6 +1408,10 @@
 					SysCall("ScenarioManager:ShowAlertMessageExt", "Interface Messaging System", tostring(messageText), messageHoldTime, 1);
 				--end
 			end
+		end
+
+		function DebugMessage(messageText, messageHoldTime)
+			SysCall("ScenarioManager:ShowAlertMessageExt", "DEBUG INFORMATION", "DEBUG: " .. tostring(messageText), messageHoldTime, 1);
 		end
 	--<<
 --<<
