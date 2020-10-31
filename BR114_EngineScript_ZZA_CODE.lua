@@ -66,9 +66,9 @@
 		UIC.Rawnumber = 0;
 		UIC.result = 0;
 		UIC.ZZALetter = "";
-		multiplier = 1;
-		temp1 = "";
-		temp2 = 0;
+		UIC.multiplier = 1;
+		UIC.temp1 = "";
+		UIC.temp2 = 0;
 	--<<
 
 	-->>Ingame Werte
@@ -190,8 +190,13 @@
 		lastValue_MainReservoir = 0
 		chknextframe = 0;
 		compactive = false;
-
 	--<<
+
+	-->>vSoll Nadel
+		vSoll = {};
+		vSoll.Vorwahl = 0;
+		vSoll.CurrentAnimState = 0;
+		vSoll.target = 0;
 --<<
 
 -->>Verweis auf das Originalskript
@@ -364,27 +369,27 @@
 					UIC.Rawnumber = string.sub(tostring(RVNumber), 1, 3);
 				-->>Abwechselnd mit 1 und 2 Multiplizieren
 					for i=1,6 do
-						temp1 = tostring(temp1 .. tonumber(string.sub("143" .. UIC.Rawnumber, i, i)) * multiplier)
-						multiplier = 3 - multiplier;
+						UIC.temp1 = tostring(UIC.temp1 .. tonumber(string.sub("143" .. UIC.Rawnumber, i, i)) * UIC.multiplier)
+						UIC.multiplier = 3 - UIC.multiplier;
 					end
 				--<<
 				-->>Quersumme errechnen
-					for i=1, string.len(temp1) do
-						temp2 = tostring(tonumber(temp2) + tonumber(string.sub(temp1, i, i)))
+					for i=1, string.len(UIC.temp1) do
+						UIC.temp2 = tostring(tonumber(UIC.temp2) + tonumber(string.sub(UIC.temp1, i, i)))
 					end
 				--<<
 				-->>Sonderfall, wenn Quersumme ein vielfaches von 10 ist
-					if (string.sub(temp2, 2) ~= "0") then
-						UIC.result = 10 - tonumber(string.sub(temp2, 2));
+					if (string.sub(UIC.temp2, 2) ~= "0") then
+						UIC.result = 10 - tonumber(string.sub(UIC.temp2, 2));
 					else
 						UIC.result = 0
 					end
 				--<<
 					Call("SetRVNumber", UIC.Rawnumber .. UIC.result .. UIC.ZZALetter);
 				if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Set RailVehicle Consist Number", 4) end
-					multiplier = 1;
-					temp1 = "";
-					temp2 = 0;
+					UIC.multiplier = 1;
+					UIC.temp1 = "";
+					UIC.temp2 = 0;
 				end
 			--<<
 
@@ -948,12 +953,21 @@
 			
 		--<<
 
+		-->>Vsoll
+			vSoll.target = Call("GetControlValue", "VirtualThrottle", 0) >= 0.5 and Call("GetControlValue", "VirtualThrottle", 0) <= 1.5 and 8.35 or (8.35*Call("GetControlValue", "VirtualThrottle", 0)*(10/12))/10;
+			if vSoll.CurrentAnimState ~= vSoll.target then
+				vSoll.CurrentAnimState = math.abs(vSoll.target - vSoll.CurrentAnimState) > 0.0007 and vSoll.CurrentAnimState + ((vSoll.target - vSoll.CurrentAnimState)--[[/ 10]]) * time * 4 or vSoll.target;
+			end
+
+			Call("vSoll:SetTime", "vSollNadel", vSoll.CurrentAnimState)
+			Call("vSoll2:SetTime", "vSollNadel", vSoll.CurrentAnimState)
+		--<<
+
+
 			ZZA.lastValue = ZZA.Value;
 			firstrun = false;
 
-
-	
-			end
+		end
 	--<<
 
 	-->>Ermittelt die Länge eines Arrays
