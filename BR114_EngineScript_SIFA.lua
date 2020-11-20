@@ -34,7 +34,7 @@ externalSIFA_messagefunction = ShowMessage2;
 --------------------------------------------------------------------------------------
 
 -- Controller
-externalSIFA_Controller_SifaOnOff = "Sifa"; -- Controller for Sifa Activation
+externalSIFA_Controller_SifaOnOff = "Sifactivefo"; -- Controller for Sifa Activation
 externalSIFA_Controller_SifaReset = "SifaReset"; -- Controller for Sifa Timer Reset
 
 -- Brakes
