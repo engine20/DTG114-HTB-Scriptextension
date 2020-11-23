@@ -8,15 +8,13 @@ externalSIFA_MODE = 1; -- 1 = "Zeit-Weg-Sifa"; 2 = "Zeit-Zeit-Sifa", 3 = "Anford
 -- Setting up variables
 --------------------------------------------------------------------------------------
 
--- For converting values of 1 or 0 to boolean2
-local boolean2 = {[0] = false, [1] = true};
 local SIFA_Wrapper_firstrun = true;
 
-SIFAWrapper_orig_init = Initialise
-SIFAWrapper_orig_Update = Update
-SIFAWrapper_orig_OnControlValue = OnControlValueChange
-SIFAWrapper_orig_OnCameraEnter = OnCameraEnter;
-SIFAWrapper_orig_OnCameraLeave = OnCameraLeave;
+local SIFAWrapper_orig_init = Initialise
+local SIFAWrapper_orig_Update = Update
+local SIFAWrapper_orig_OnControlValue = OnControlValueChange
+local SIFAWrapper_orig_OnCameraEnter = OnCameraEnter;
+local SIFAWrapper_orig_OnCameraLeave = OnCameraLeave;
 
 --------------------------------------------------------------------------------------
 -- Utiity Functions
