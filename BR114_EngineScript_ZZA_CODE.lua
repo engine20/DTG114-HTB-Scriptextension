@@ -213,13 +213,16 @@
 	ZDS.lastPantoState = 0
 	ZDS.PantoCoolDown = 0
 	ZDS.HSState = 0
-	ZDS.lastHSState = 0
+	ZDS.lastHSState = 1
 	ZDS.PantoSelectState = 0
-	ZDS.lastPantoSelectState = 0
+	ZDS.lastPantoSelectState = 1
 	ZDS.PantoStateNames = {"Vorne", "Beide", "Hinten"}
 	ZDS.ShowRaisedMessage = false
+	ZDS.PantoLoopRun = 0
 --<<
 
+	local FMLUPLOCK = false
+	local FMLDOWNLOCK = false
 -->>Kompressor
 	local Komp = {}
 	Komp.MainReservoir = 0
@@ -241,6 +244,7 @@ local _Update = Update;
 local _Initialise = Initialise;
 local _OnConsistMessage = OnConsistMessage;
 local _OnCameraEnter = OnCameraEnter;
+local _OnControlValueChange = OnControlValueChange;
 --<<
 
 --------------------------------------------------------------------------------------
@@ -443,43 +447,43 @@ end
 	end
 
 -->>Zeigt den Schnee an
-	local function Snow(factor)
-		local speed = Call( "GetSpeed" );
-		if (speed > 0) then
-			Snow.gSnowPlowLeft = 1;
-			Snow.gSnowPlowRight = 1;
-			Snow.gSnowPlowLeftrev = 0;
-			Snow.gSnowPlowRightrev = 0;
+	function Snow.Emit(self, factor)
+		self.speed = Call( "GetSpeed" );
+		if (self.speed > 0) then
+			self.gSnowPlowLeft = 1;
+			self.gSnowPlowRight = 1;
+			self.gSnowPlowLeftrev = 0;
+			self.gSnowPlowRightrev = 0;
 		else
-			Snow.gSnowPlowLeft = 0;
-			Snow.gSnowPlowRight = 0;
-			Snow.gSnowPlowLeftrev = 1;
-			Snow.gSnowPlowRightrev = 1;
+			self.gSnowPlowLeft = 0;
+			self.gSnowPlowRight = 0;
+			self.gSnowPlowLeftrev = 1;
+			self.gSnowPlowRightrev = 1;
 		end
-
-
-		if ( speed > 25 ) then
-			speed = 25;
+--
+--
+		if ( self.speed > 25 ) then
+			self.speed = 25;
 		end
-
-		if ( speed > 10 ) then
-			Snow.gEmitter = (speed - 10) * 0.1
-			if ( Snow.gEmitter < 0.08 ) then
-				Snow.gEmitter = 0.08;
-			elseif ( Snow.gEmitter >= 0.45 ) then
-				Snow.gEmitter = 0.45;
+--
+		if ( self.speed > 10 ) then
+			self.gEmitter = (self.speed - 10) * 0.1
+			if ( self.gEmitter < 0.08 ) then
+				self.gEmitter = 0.08;
+			elseif ( self.gEmitter >= 0.45 ) then
+				self.gEmitter = 0.45;
 			end
-			if ( Snow.gSnowPlowLeft == 1 ) then
+			if ( self.gSnowPlowLeft == 1 ) then
 				Call( "SnowPlow1:SetEmitterActive", 1 );
 				-- Call( "SnowPlow1:SetEmitterRate", 1 - gEmitter );
-				Call( "SnowPlow1:SetEmitterColour", 1, 1, 1, factor * (Snow.gEmitter - 0.08));
+				Call( "SnowPlow1:SetEmitterColour", 1, 1, 1, factor * (self.gEmitter - 0.08));
 			else
 				Call( "SnowPlow1:SetEmitterActive", 0 );
 			end
-			if ( Snow.gSnowPlowRight == 1 ) then
+			if ( self.gSnowPlowRight == 1 ) then
 				Call( "SnowPlow2:SetEmitterActive", 1 );
 				-- Call( "SnowPlow2:SetEmitterRate", 1 - gEmitter );
-				Call( "SnowPlow2:SetEmitterColour", 1, 1, 1, factor * (Snow.gEmitter - 0.08));
+				Call( "SnowPlow2:SetEmitterColour", 1, 1, 1, factor * (self.gEmitter - 0.08));
 			else
 				Call( "SnowPlow2:SetEmitterActive", 0 );
 			end
@@ -487,26 +491,26 @@ end
 			Call( "SnowPlow1:SetEmitterActive", 0 );
 			Call( "SnowPlow2:SetEmitterActive", 0 );
 		end
-
-		if ( speed < -10 ) then
-			speed = speed * -1;
-			Snow.gEmitter = (speed - 10) * 0.1
-			if ( Snow.gEmitter < 0.08 ) then
-				Snow.gEmitter = 0.08;
-			elseif ( Snow.gEmitter >= 0.45 ) then
-				Snow.gEmitter = 0.45;
+--
+		if ( self.speed < -10 ) then
+			self.speed = self.speed * -1;
+			self.gEmitter = (self.speed - 10) * 0.1
+			if ( self.gEmitter < 0.08 ) then
+				self.gEmitter = 0.08;
+			elseif ( self.gEmitter >= 0.45 ) then
+				self.gEmitter = 0.45;
 			end
-			if ( Snow.gSnowPlowLeftrev == 1 ) then
+			if ( self.gSnowPlowLeftrev == 1 ) then
 				Call( "SnowPlow1rev:SetEmitterActive", 1 );
 				-- Call( "SnowPlow1:SetEmitterRate", 1 - gEmitter );
-				Call( "SnowPlow1rev:SetEmitterColour", 1, 1, 1, factor * (Snow.gEmitter - 0.08));
+				Call( "SnowPlow1rev:SetEmitterColour", 1, 1, 1, factor * (self.gEmitter - 0.08));
 			else
 				Call( "SnowPlow1rev:SetEmitterActive", 0 );
 			end
-			if ( Snow.gSnowPlowRightrev == 1 ) then
+			if ( self.gSnowPlowRightrev == 1 ) then
 				Call( "SnowPlow2rev:SetEmitterActive", 1 );
 				-- Call( "SnowPlow2:SetEmitterRate", 1 - gEmitter );
-				Call( "SnowPlow2rev:SetEmitterColour", 1, 1, 1, factor * (Snow.gEmitter - 0.08));
+				Call( "SnowPlow2rev:SetEmitterColour", 1, 1, 1, factor * (self.gEmitter - 0.08));
 			else
 				Call( "SnowPlow2rev:SetEmitterActive", 0 );
 			end
@@ -516,12 +520,12 @@ end
 		end
 	end
 
-	local function ShowMessage(messageText, messageHoldTime)
+	local function ShowMessage(messageText, messageHoldTime, Name)
 		if (CONFIG.DISPLAYMESSAGES == true) then
 			--if (not IsEnginewithKey) then
 				--SysCall("ScenarioManager:ShowAlertMessageExt", tostring(--[[RVNumber .. ]]"Interface Messaging System"), tostring(RVNumber .. ": " .. messageText), messageHoldTime, 1);
 			--else
-				SysCall("ScenarioManager:ShowAlertMessageExt", "Interface Messaging System", tostring(messageText), messageHoldTime, 1);
+				SysCall("ScenarioManager:ShowAlertMessageExt", Name or "Interface Messaging System", tostring(messageText), messageHoldTime, 1);
 			--end
 		end
 	end
@@ -1017,6 +1021,33 @@ end
 						--<<
 						end
 
+						-------------------------------------- Player switching trough the ZZA
+						if (global.timerunning > 1) then
+							-->>Heraufschalten
+								if (Call("GetControlValue", "FMLUp", 0) == 1 and FMLUPLOCK == false and Call("GetControlValue", "TractionBlower_Control", 0) < 1) then
+									FMLUPLOCK = true;
+									Call("SetControlValue", "TractionBlower_Control", 0, math.floor(Call("GetControlValue", "TractionBlower_Control", 0) + 1))
+									ShowMessage(math.floor(Call("GetControlValue", "TractionBlower_Control", 0)) == 0 and "Off" or "On", 4, "Traction Motor Blower")
+							--<<
+							-->>Sperre, damit man die Taste loslassen muss, um wieder weiterschalten zu können
+								elseif (Call("GetControlValue", "FMLUp", 0) ~= 1 and FMLUPLOCK == true) then
+									FMLUPLOCK = false;
+								end
+							--<<
+							-->>Herbaschalten der ZZA
+								if(Call("GetControlValue", "FMLDown", 0) == 1 and FMLDOWNLOCK == false and Call("GetControlValue", "TractionBlower_Control", 0) > -1) then
+									FMLDOWNLOCK = true;
+									Call("SetControlValue", "TractionBlower_Control", 0, math.floor(Call("GetControlValue", "TractionBlower_Control", 0) - 1))
+									ShowMessage(math.floor(Call("GetControlValue", "TractionBlower_Control", 0)) == 0 and "Off" or "Automatic", 4, "Traction Motor Blower")
+							--<<
+							-->>Sperre, damit man die Taste loslassen muss, um wieder weiterschalten zu können
+								elseif (Call("GetControlValue", "FMLDown", 0) ~= 1 and FMLDOWNLOCK == true) then
+									FMLDOWNLOCK = false;
+								end
+							--<<
+						end
+						
+
 					-->>ZZA Anzeigen
 						if (ZZA.lastValue ~= ZZA.Value and global.timerunning > 1 and ZZA.Prueflauf.active == false) then
 						-->>ZZAPosition als Nachricht anzeigen
@@ -1204,27 +1235,27 @@ end
 
 								--############################## Panto ###################################
 
-								if global.timerunning > ZDS.PantoCoolDown + 6.5 then
-									if ZDS.ShowRaisedMessage then
+								if Call("GetControlValue", "ExtPantograph_1", 0) == math.floor(Call("GetControlValue", "ExtPantograph_1", 0)) and Call("GetControlValue", "ExtPantograph_2", 0) == math.floor(Call("GetControlValue", "ExtPantograph_2", 0)) then
+									if ZDS.ShowRaisedMessage and ((Call("GetControlValue", "PantographID", 0) == 0 and Call("GetControlValue", "ExtPantograph_2", 0) == ZDS.PantoState) or Call("GetControlValue", "PantographID", 0) ~= 0 and Call("GetControlValue", "ExtPantograph_1", 0) == ZDS.PantoState) then
 										ZDS.ShowRaisedMessage = false
-										ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPanto " .. (ZDS.PantoState == 1 and "gehoben" or "gesenkt"), 4);
+										ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. (Call("GetControlValue", "PantographID", 0) ~= 2 and ":\nPanto " or ":\nPantos ") .. (ZDS.PantoState == 1 and "gehoben" or "gesenkt") .. " - " .. ZDS.PantoStateNames[tonumber(Call("GetControlValue", "PantographID", 0)) == 0 and 3 or tonumber(Call("GetControlValue", "PantographID", 0))], 4)
 									end
 									if (ZDS.PantoState ~= ZDS.lastPantoState) then
 										if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Panto changed State", 4) end
 										-->>Anzeigen des aktuellen Lüfterstatus
-										if (ZDS.PantoState == 0) then
-											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPanto - Senken", 4);
+										if (ZDS.PantoState == 0 and Call("GetControlValue", "ExtPantograph_1", 0) + Call("GetControlValue", "ExtPantograph_2", 0) ~= 0) then
+											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. (Call("GetControlValue", "PantographID", 0) ~= 2 and ":\nPanto " or ":\nPantos ") .. "senken - " ..  ZDS.PantoStateNames[tonumber(Call("GetControlValue", "PantographID", 0)) == 0 and 3 or tonumber(Call("GetControlValue", "PantographID", 0))], 4)
 											--Call("SetControlTargetValue", "PantographSelect", 0, 0)
 											Call("SetControlTargetValue", "PantographSwitch", 0, -1)
-										elseif (ZDS.PantoState == 1) then
-											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPanto - Heben", 4);
+											ZDS.ShowRaisedMessage = true;
+										elseif (ZDS.PantoState == 1 and Call("GetControlValue", "ExtPantograph_1", 0) + Call("GetControlValue", "ExtPantograph_2", 0) < 1) then
+											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. (Call("GetControlValue", "PantographID", 0) ~= 2 and ":\nPanto " or ":\nPantos ") .. "heben - " ..  ZDS.PantoStateNames[tonumber(Call("GetControlValue", "PantographID", 0)) == 0 and 3 or tonumber(Call("GetControlValue", "PantographID", 0))], 4)
 											--Call("SetControlTargetValue", "PantographSelect", 0, 1)
 											Call("SetControlTargetValue", "PantographSwitch", 0, 1)
+											ZDS.ShowRaisedMessage = true;
 										end
 										--<<
 										ZDS.lastPantoState = ZDS.PantoState;
-										ZDS.PantoCoolDown = global.timerunning;
-										ZDS.ShowRaisedMessage = true;
 									end
 
 								--############################## MainSwitch ###################################
@@ -1243,20 +1274,28 @@ end
 										--<<
 										ZDS.lastHSState = ZDS.HSState;
 									end
+									ZDS.PantoLoopRun = ZDS.PantoLoopRun + 1
 								end
 
 								--############################## PantoSelection ###################################
 
 								if (ZDS.PantoSelectState ~= ZDS.lastPantoSelectState) then
-									if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("PantoSelecz changed State", 4) end
-									-->>Anzeigen des aktuellen Lüfterstatus
-									if (ZDS.PantoSelectState == 1) then
-										ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPanto geändert - " .. ZDS.PantoStateNames[math.floor(tonumber(Call("GetControlValue", "PantographID", 0))) + 1], 4);
-										Call("SetControlTargetValue", "PantographSelect", 0, 1)
+									if Call("GetControlValue", "ExtPantograph_1", 0) == 0 and Call("GetControlValue", "ExtPantograph_2", 0) == 0 then
+										if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("PantoSelecz changed State", 4) end
+										-->>Anzeigen des aktuellen Lüfterstatus
+										if (ZDS.PantoSelectState == 1) then
+											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPanto geändert - " .. ZDS.PantoStateNames[math.floor(tonumber(Call("GetControlValue", "PantographID", 0))) + 1], 4);
+											Call("SetControlTargetValue", "PantographSelect", 0, 1)
+										end
+										--<<
+									else
+										if (ZDS.PantoSelectState == 1) then
+											ShowMessage(ZDS.ZDSMasterRVNumber .. " > " .. CreateConsistNumber(global.RVNumber, "143") .. " " .. (string.len(tostring(ZDS.ZDSRVNumber)) == 5 and "ZDS" or "ZWS") .. ":\nPantographen müssen erst gesenkt werden", 4)
+										end
 									end
-									--<<
 									ZDS.lastPantoSelectState = ZDS.PantoSelectState;
 								end
+
 
 								if (global.timerunning - ZDS.lastParentAlive > 6) then
 									ZDS.isControlledbyEngine = false;
@@ -1276,7 +1315,7 @@ end
 								Call("SetControlValue", "TractionBlower_State", 0, ZDS.Value);
 								Call("SetControlValue", "TractionBlower_State", 0, ZDS.Value);
 							end
-							
+
 
 
 							--<<
@@ -1320,7 +1359,7 @@ end
 
 			-->>Ruft die Funktion zum Anzeigen des Flugschnees auf
 				if (CONFIG.ENABLESNOW == true and SysCall("ScenarioManager:GetSeason") == 3) then
-					Snow(2);
+					Snow:Emit(2);
 				else
 					Call( "SnowPlow1:SetEmitterActive", 0 );
 					Call( "SnowPlow2:SetEmitterActive", 0 );
@@ -1520,6 +1559,7 @@ end
 					if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Slave got FML alive Request", 4) end
 						if (ZDS.isControlledbyEngine == false) then
 							ShowMessage(CreateConsistNumber(global.RVNumber, "143") .. ": " .. (string.len(tostring(ZDS.ZDSMasterRVNumber)) == 5 and "ZDS" or "ZWS") .. " Verbindet... \nAnforderung erhalten von " .. ZDS.ZDSMasterRVNumber .. "!\nSende Antwort!", 4);
+							ZDS.ShowRaisedMessage = false;
 						end
 						ZDS.isControlledbyEngine = true
 						Call("SendConsistMessage", messages.ZDS, tostring("RV" .. CreateConsistNumber(global.RVNumber, "143")), 0);
@@ -1606,3 +1646,23 @@ end
 
 	end
 --<<
+
+	function OnControlValueChange(name, index, value)
+		if name == "FMLUp" then
+			if value == 1 then
+				Call("SetControlTargetValue", "TractionBlower_Switch", 0, 0.99)
+			else
+				Call("SetControlTargetValue", "TractionBlower_Switch", 0, 0)
+			end
+			Call("SetControlValue", name, index, value)
+		elseif name == "FMLDown" then
+			if value == 1 then
+				Call("SetControlTargetValue", "TractionBlower_Switch", 0, -0.99)
+			else
+				Call("SetControlTargetValue", "TractionBlower_Switch", 0, 0)
+			end
+			Call("SetControlValue", name, index, value)
+		else
+			_OnControlValueChange(name, index, value)
+		end
+	end

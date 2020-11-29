@@ -3,12 +3,12 @@ require "Assets/Railtraction/IC2/IC2/engine/scripting.out"
 --------------------------------------------------------------------------------------
 -- Setting up variables
 --------------------------------------------------------------------------------------
-orig_init = Initialise
-orig_Update = Update
-orig_OnControlValue = OnControlValueChange
-orig_OnCameraEnter = OnCameraEnter;
-orig_OnCameraLeave = OnCameraLeave;
-orig_OnConsistMessage = OnConsistMessage;
+local orig_init = Initialise
+local orig_Update = Update
+local orig_OnControlValue = OnControlValueChange
+local orig_OnCameraEnter = OnCameraEnter;
+local orig_OnCameraLeave = OnCameraLeave;
+local orig_OnConsistMessage = OnConsistMessage;
 
 CONFIG = {};
 	--
@@ -43,6 +43,7 @@ local global = {};
 	global.simulationTime = 0
 	global.ActiveCab = 0
 	global.RegulatorControlValue = 0;
+	global.firstcameraenter = true
 local run = 1;
 
 local Pantoswitchanimrunning = false
@@ -360,18 +361,11 @@ function Update(delta)
 						--Call("SendConsistMessage", messages.ZDS, tostring("Regulator" .. (global.RegulatorControlValue or 0)), 0);
 						--Call("SendConsistMessage", messages.ZDS, tostring("Regulator" .. (global.RegulatorControlValue or 0)), 1);
 					end
-
-
-
-
-					if not global.isDeadEngine then
-						if (ZDS.isControlledbyEngine == true) then
-							if (global.timerunning - ZDS.lastParentAlive > 6) then
-								ZDS.isControlledbyEngine = false;
-							end
-						end
-					end
 					if ZDS.Connectionetablished then Call("SetControlValue", "Regulator", 0, global.RegulatorControlValue / 3) end
+				else
+					ZDS.Connectionetablished = false
+					ZDS.lastConnectionetablished = ZDS.Connectionetablished
+					ZDS.lastConsistChecktimetime = global.timerunning;
 				end
 			end
 
@@ -424,6 +418,10 @@ function OnCameraEnter(cabEndWithCamera, carriageCam)
 	if orig_OnCameraEnter then orig_OnCameraEnter(cabEndWithCamera, carriageCam) end
 	--if cabEndWithCamera ~= global.ActiveCab and ZDS.Connectionetablished then DisplayMessage(ZDS.ZDSMasterRVNumber .. " > " .. global.RVNumber, "143" .. " ZWS:\nVerbindung wird wiederhergestellt!", 4) end
 	global.ActiveCab = cabEndWithCamera;
+	if global.firstcameraenter then
+		if Call("GetControlValue", "PantographControl", 0) == 1 then Call("SetControlValue", "HauptSH", 0, 1) end
+		global.firstcameraenter = false
+	end
 end
 
 function OnCameraLeave()
