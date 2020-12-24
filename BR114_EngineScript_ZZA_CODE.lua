@@ -41,6 +41,7 @@
 	messages.test = 7004;
 	messages.ZDS = 7007;
 	messages.CloseDoorsNow = 7008;
+	messages.Dostolight = 7009
 	--
 	messages.vR = {};
 	--
@@ -51,7 +52,6 @@
 	messages.vR.CONSIST_CHECK = 895951;
 
 	--local lastValue_Doors = 0;
-	dustinkst = 0
 --<<
 
 -->>UIC
@@ -236,6 +236,8 @@
 	vSoll.Vorwahl = 0;
 	vSoll.CurrentAnimState = 0;
 	vSoll.target = 0;
+
+	local Dostolightvalue = 0;
 --<<
 
 -->>Verweis auf das Originalskript
@@ -955,7 +957,7 @@ end
 --							############################## Consist Check ###################################
 
 						----------------------------------------- Searches for Compatible Consists in the whole Consist
-						if (global.timerunning > 0.5 and ZZA.Prueflauf.messagessent == false) then
+						if (Call("GetControlValue", "ZZAtest", 0) == 1 and ZZA.Prueflauf.active == false) then
 							if CONFIG.ENABLEDEBUGMESSAGES then DebugMessage("Starting Testrun for Compatible Vehicles", 4) end
 							if (global.IsEngineinFront == true) then
 								Call("SendConsistMessage", messages.testrun2, "0", 0);
@@ -1660,6 +1662,14 @@ end
 				Call("SetControlTargetValue", "TractionBlower_Switch", 0, -0.99)
 			else
 				Call("SetControlTargetValue", "TractionBlower_Switch", 0, 0)
+			end
+			Call("SetControlValue", name, index, value)
+		elseif name == "DostoLight" then
+			if value == 1 then
+				Dostolightvalue = 1 - Dostolightvalue
+				Call("SendConsistMessage", messages.Dostolight, tostring(Dostolightvalue), 0)
+				Call("SendConsistMessage", messages.Dostolight, tostring(Dostolightvalue), 1)
+				ShowMessage("Wagenlicht - " .. (Dostolightvalue == 1 and "An" or "Aus"), 4)
 			end
 			Call("SetControlValue", name, index, value)
 		else
